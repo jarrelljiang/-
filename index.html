@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>动态词包</title>
+</head>
+<body>
+<div id="app">
+	<input id="input" />
+	<button onclick="input.value+='{city}';preValue=input.value">城市</button><button onclick="input.value+='{date}';preValue=input.value">日期</button>
+</div>
+</body>
+<script type="text/javascript">
+var wordArr=['city','date']
+var preValue=''
+//var flag=true
+//在数组中查找所有出现的x，并返回一个包含匹配索引的数组
+function findall(a,x){
+ var results=[],
+   len=a.length,
+   pos=0;
+ while(pos<len){
+  pos=a.indexOf(x,pos);
+  if(pos===-1){//未找到就退出循环完成搜索
+   break;
+  }
+  results.push(pos);//找到就存储索引
+  pos+=1;//并从下个位置开始搜索
+ }
+ return results;
+}
+document.getElementById('input').addEventListener('input', e => {
+	/*找出所有'{'和'}'的index(数组)，如果input的value值改变后，光标位置在此数组中，就执行第二个判断
+	  否则执行第一个判断，第二个判断是用来处理光标位置刚好删除'{'或'}'，第一个判断是处理删除后光标
+	  位置还在'{'和'}'中间*/
+	var indexArr=findall(preValue,'{').concat(findall(preValue,'}'))
+	//input的value值改变后，光标位置会被重置为最右边
+	var selectionIndex=e.target.selectionStart
+  //flag=true
+  var curArr=input.value.match(/{[^}]*?}/g)
+  var preArr=preValue.match(/{[^}]*?}/g)
+	if(curArr!=null&&!indexArr.includes(e.target.selectionStart)){
+		curArr.forEach((item,index)=>{
+			if(!wordArr.includes(item.slice(1,item.length-1))){
+				input.value=input.value.replace(item,'')
+				//flag=false
+			}else{
+				var index=input.value.indexOf(item)
+				if(e.target.selectionStart>=index&&e.target.selectionStart<index+item.length){
+					input.value=input.value.replace(item,'')
+					//flag=false
+				}
+			}
+		})
+	}
+	// if(!flag) {
+	// 	preValue=input.value
+	// 	return
+	// }
+	if(preArr!=null&&indexArr.includes(selectionIndex)){
+		var idx=0
+		preArr.forEach((item,index)=>{
+			if(!wordArr.includes(item.slice(1,item.length-1))){
+				input.value=input.value.replace(item,'')
+			}else{
+				var index=preValue.indexOf(item,idx)
+				if(e.target.selectionStart>=index&&e.target.selectionStart<index+item.length){
+					input.value=preValue.slice(0,index)+preValue.slice(index+item.length)
+					preValue=input.value
+				}
+				idx=index+item.length
+			}
+		})
+	}
+	preValue=input.value
+})
+</script>
+</body>
+</html>
