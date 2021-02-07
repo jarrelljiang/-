@@ -45,7 +45,7 @@ document.getElementById('input').addEventListener('input', e => {
 				//flag=false
 			}else{
 				var index=input.value.indexOf(item)
-				if(e.target.selectionStart>=index&&e.target.selectionStart<index+item.length){
+				if(e.target.selectionStart>index&&e.target.selectionStart<index+item.length){
 					input.value=input.value.replace(item,'')
 					//flag=false
 				}
