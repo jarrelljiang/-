@@ -12,7 +12,8 @@
 <script type="text/javascript">
 var wordArr=['city','date']
 var preValue=''
-//var flag=true
+var isBreak1=false
+var isBreak2=false
 //在数组中查找所有出现的x，并返回一个包含匹配索引的数组
 function findall(a,x){
  var results=[],
@@ -29,6 +30,8 @@ function findall(a,x){
  return results;
 }
 document.getElementById('input').addEventListener('input', e => {
+	isBreak1=false
+	isBreak2=false
 	/*找出所有'{'和'}'的index(数组)，如果input的value值改变后，光标位置在此数组中，就执行第二个判断
 	  否则执行第一个判断，第二个判断是用来处理光标位置刚好删除'{'或'}'，第一个判断是处理删除后光标
 	  位置还在'{'和'}'中间*/
@@ -38,33 +41,40 @@ document.getElementById('input').addEventListener('input', e => {
   //flag=true
   var curArr=input.value.match(/{[^}]*?}/g)
   var preArr=preValue.match(/{[^}]*?}/g)
-	if(curArr!=null&&!indexArr.includes(e.target.selectionStart)){
+	if(curArr!=null&&!indexArr.includes(selectionIndex)){
 		curArr.forEach((item,index)=>{
+			if(isBreak1) return
 			if(!wordArr.includes(item.slice(1,item.length-1))){
+				var index=input.value.indexOf(item)
 				input.value=input.value.replace(item,'')
-				//flag=false
+				input.setSelectionRange(index, index);
+			    isBreak1=true
 			}else{
 				var index=input.value.indexOf(item)
 				if(e.target.selectionStart>index&&e.target.selectionStart<index+item.length){
 					input.value=input.value.replace(item,'')
-					//flag=false
+					input.setSelectionRange(index, index);
+					isBreak1=true
 				}
 			}
 		})
 	}
-	// if(!flag) {
-	// 	preValue=input.value
-	// 	return
-	// }
 	if(preArr!=null&&indexArr.includes(selectionIndex)){
 		var idx=0
 		preArr.forEach((item,index)=>{
+			if(isBreak2) return
 			if(!wordArr.includes(item.slice(1,item.length-1))){
+				var index=input.value.indexOf(item)
 				input.value=input.value.replace(item,'')
+				input.setSelectionRange(index, index);
+				isBreak2=true
 			}else{
 				var index=preValue.indexOf(item,idx)
-				if(e.target.selectionStart>=index&&e.target.selectionStart<index+item.length){
+				if(selectionIndex>=index&&selectionIndex<index+item.length){
+					console.log(444)
 					input.value=preValue.slice(0,index)+preValue.slice(index+item.length)
+					input.setSelectionRange(index, index);
+					isBreak2=true
 					preValue=input.value
 				}
 				idx=index+item.length
