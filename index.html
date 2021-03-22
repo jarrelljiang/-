@@ -71,7 +71,6 @@ document.getElementById('input').addEventListener('input', e => {
 			}else{
 				var index=preValue.indexOf(item,idx)
 				if(selectionIndex>=index&&selectionIndex<index+item.length){
-					console.log(444)
 					input.value=preValue.slice(0,index)+preValue.slice(index+item.length)
 					input.setSelectionRange(index, index);
 					isBreak2=true
